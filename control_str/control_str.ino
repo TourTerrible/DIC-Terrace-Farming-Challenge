@@ -31,53 +31,79 @@ Servo moisture_servo;
  
 //Function to perform harvesting
 void harvest_func(){
-  
+  if(harvest_job){
+    //Turn on harvester motor
+    digitalWrite(harvest_pin1, HIGH);
+    digitalWrite(harvest_pin2, LOW);
+  }
+  //Else turn off motors
+  else digitalWrite(harvest_pin1, LOW);
 }
 
 //Function to perform seeding
 void seeding_func(){
-  
+  if(seeding_job){
+    //Turn on seeding motor
+    digitalWrite(seeding_pin1, HIGH);
+    digitalWrite(seeding_pin2, LOW);
+  }
+  //Else turn off motors
+  else digitalWrite(seeding_pin1, LOW);
 }
 
 //Function to check moisture
 int moisture_func(){
-  int moisture_val = 0;
-  //Full servo rotation
-  for(int i=0; i<=180; i++){
-    moisture_servo.write(i);
+  //If moisture needs to be checked
+  if (moisture_job){
+    int moisture_val = 0;
+    //Full servo rotation
+    for(int i=0; i<=180; i++){
+      moisture_servo.write(i);
+    }
+    //Take 200 readings
+    for(int i=0; i<200; i++){
+      //Read moisture sensor values
+      moisture_val += analogRead(moisture_pin);
+      delay(20);
+    }
+    //Take average reading
+    moisture_val = moisture_val/200;
+    //Select job to perform
+    //Temp-idea - remove later
+    //If less moisture - perform water_job
+    if (moisture_val < 512)water_job = 1;
+    //Complete moisture detection work
+    moisture_job = 0;
   }
-  //Take 200 readings
-  for(int i=0; i<200; i++){
-    //Read moisture sensor values
-    moisture_val += analogRead(moisture_pin);
-  }
-  //Take average reading
-  moisture_val = moisture_val/200;
-  //Select job to perform
-  //Temp-idea - remove later
-  //If less moisture - perform water_job
-  if (moisture_val < 512)water_job = 1;
-  //Complete moisture detection work
-  moisture_job = 0;
+  //Else no watering
+  else water_job = 0;
 }
 
 //Function to perform watering
 void watering_func(bool flow_dir){
-  //Runs only if moisture is low
-  //Select flow path
-  //LOW switches the relay
-  if (flow_dir) digitalWrite(solenoid_pin, LOW);
-  //Otherwise, relay will switch back
-  //Turn on pump
-  digitalWrite(pump_pin_enable, HIGH);
-  digitalWrite(pump_pin1, HIGH);
-  digitalWrite(pump_pin2, LOW);
-  //This will turn off only when bot reaches end
+  if (water_job){
+    //Runs only if moisture is low
+    //Select flow path
+    //LOW switches the relay
+    if (flow_dir) digitalWrite(solenoid_pin, LOW);
+    //Otherwise, relay will switch back
+    //Turn on pump
+    digitalWrite(pump_pin_enable, HIGH);
+    digitalWrite(pump_pin1, HIGH);
+    digitalWrite(pump_pin2, LOW);
+    //This will turn off only when bot reaches end
+  }
+  //Else turn off pumps and solenoid
+  else{
+    digitalWrite(solenoid_pin, HIGH);
+    digitalWrite(pump_pin_enable, LOW);
+    digitalWrite(pump_pin1, LOW);
+  }
 }
 
 //Function to perform ploughing
 void ploughing_func(){
-  
+  //Uses stepper motor
 }
 
 
@@ -96,6 +122,14 @@ void setup() {
 
   //Initialize motors
   moisture_servo.write(0);  //Initialize servo at 0 pos
+  digitalWrite(harvest_pin1, LOW);
+  digitalWrite(harvest_pin2, LOW);
+  digitalWrite(seeding_pin1, LOW);
+  digitalWrite(seeding_pin2, LOW);
+  digitalWrite(pump_pin_enable, LOW);
+  digitalWrite(pump_pin1, LOW);
+  digitalWrite(pump_pin2, LOW);
+  digitalWrite(solenoid_pin, LOW);
 }
 
 void loop() {
@@ -104,10 +138,10 @@ void loop() {
   //Change moisture check
   moisture_job = 1;
   //Change according to orientation or so so  
-  //Check for each function
-  if (moisture_job)   moisture_func();
-  if (water_job)      watering_func(flow_dir);
-  if (harvest_job)    harvest_func();
-  if (seeding_job)    seeding_func();
-  if (plough_job)     ploughing_func();
+  //Run all the functions
+  moisture_func();
+  watering_func(flow_dir);
+  harvest_func();
+  seeding_func();
+  ploughing_func();
 }
