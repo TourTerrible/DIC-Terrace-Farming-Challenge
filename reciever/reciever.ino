@@ -1,18 +1,25 @@
-byte mystr[2]; 
+byte data[7]; 
 
 void setup() {
-  pinMode(6,OUTPUT);
-  pinMode(7,OUTPUT);
   // Begin the Serial at 9600 Baud
   Serial.begin(9600);
 }
 
 void loop() {
-  Serial.readBytes(mystr,2); 
-  Serial.println(mystr[0]); 
-  Serial.println(mystr[1]); 
-  digitalWrite(7,(int)mystr[0]);
-  
-  analogWrite(6,(int)mystr[1]);
+  Serial.readBytes(data,7); 
+  Serial.print(data[0]);
+  Serial.print("  ") ;
+  Serial.print(data[1]);
+  Serial.print("  "); 
+  Serial.print(data[2]);
+  Serial.print("  ") ;
+  Serial.print(data[3]);
+  Serial.print("  ") ;
+  Serial.print(data[4]);
+  Serial.print("  ") ;
+  Serial.print(data[5]); 
+  Serial.print("  ") ;
+  Serial.println(data[6]);
  
+  
 }
