@@ -4,8 +4,12 @@
 #include <ESP8266WebServer.h>
  
 //SSID and Password to your ESP Access Point
-const char* ssid = "abd";
+const char* ssid = "DIC_IITG";
 const char* password = "12345678";
+byte data[]={0,010};
+
+
+
 
 const char INDEX_HTML[] =
 "<!DOCTYPE HTML>"
@@ -69,7 +73,7 @@ const char INDEX_HTML[] =
  "<p>Analog:"
  "</p>"
  "<div class=\"slidecontainer\">"
- "<input type=\"range\" min=\"300\" max=\"800\" value=\"300\" class=\"slider\" id=\"myRange\">"
+ "<input type=\"range\" min=\"1\" max=\"100\" value=\"1\" class=\"slider\" id=\"myRange\">"
  "<form action=\"/SPEED\" method=\"POST\">"
  "<input type=\"text\" id=\"v2\" name=\"demo\">"
  "<input type=\"submit\" value=\"change speed\"></form>"
@@ -113,17 +117,22 @@ void handleRoot() {                         // When URI / is requested, send a w
   
 }
 
-void handleLED() {                          // If a POST request is made to URI /LED
-  digitalWrite(BUILTIN_LED,!digitalRead(BUILTIN_LED));      // Change the state of the LED
+void handleLED() {  
+  data[0]=!data[0];   
+  data[1]=data[1];// If a POST request is made to URI /LED
+  //digitalWrite(BUILTIN_LED,!digitalRead(BUILTIN_LED));      // Change the state of the LED
   server.sendHeader("Location","/");        // Add a header to respond with a new location for the browser to go to the home page again
   server.send(303);                         // Send it back to the browser with an HTTP status 303 (See Other) to redirect
 }
 void handleSpeed(){
   String v = server.arg("demo");
-  digitalWrite(D3,LOW);
-  digitalWrite(D4,HIGH);
-  Serial.println(v);
-  analogWrite(D2,v.toInt()); 
+  data[1]=v.toInt();
+  data[0]=data[0];
+  //data[2:5]=v.toInt()
+//  digitalWrite(D3,LOW);
+//  digitalWrite(D4,HIGH);
+//  Serial.println(v);
+//  analogWrite(D2,v.toInt()); 
   server.sendHeader("Location","/");        // Add a header to respond with a new location for the browser to go to the home page again
   server.send(303);   
 }
@@ -133,7 +142,7 @@ void handleSpeed(){
 //                  SETUP
 //===============================================================
 void setup(void){
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("");
   WiFi.mode(WIFI_AP);           //Only Access point
   WiFi.softAP(ssid, password);
@@ -165,4 +174,6 @@ WiFi.config(ip, gateway, subnet); // before or after Wifi.Begin(ssid, password);
 //===============================================================
 void loop(void){
   server.handleClient();          //Handle client requests
+  Serial.write(data,2);
+  delay(1000);
 }

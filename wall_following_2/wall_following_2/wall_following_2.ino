@@ -1,5 +1,5 @@
 
-#define kp 5.00                                            
+#define kp 1.50                                            
 #define ki 0.00
 #define kd 1.00
 #define k_dist 3
@@ -31,7 +31,7 @@ int MAX_CORREC=15;
 int THRESH_ANGLE=1;
 int constant_speed=100;
 int speed_avg=120;
-int calibration=0;
+int calibration=50;
 
 #define pwm1 8
 #define dir1 9                         //for Right Motor
