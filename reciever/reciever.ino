@@ -4,7 +4,7 @@ void setup() {
   // Begin the Serial at 9600 Baud
   Serial.begin(9600);
 }
-
+//{start,pump,side,center,seeding,plough,harvest}
 void loop() {
   Serial.readBytes(data,7); 
   Serial.print(data[0]);
