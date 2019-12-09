@@ -27,6 +27,7 @@ bool control_movement;
 float DISTANCE_PER_SENSORVALUE=.017;
 int MAX_SENSOR_READING=4000;
 int LARGE_SENSOR_READING=15000;
+int DEPTH_SENSOR_DIFFERENCE=20;
 int CONSTANT_DIST=20;
 int THRESH_DIST=5;
 int THRESH_VALUE=10;
@@ -35,6 +36,7 @@ int THRESH_ANGLE=1;
 int constant_speed=100;
 int speed_avg=120;
 int calibration=50;
+int FLAG=1;
 
 
 
@@ -65,25 +67,25 @@ int calibration=50;
 #define brm_pwm 39 
 
 //Ping Sensor pins
-
+//side,left back sensor 1
 #define trigPin1 2
 #define echoPin1 3
-
+//side,left sensor 2
 #define trigPin2 4
 #define echoPin2 5
-
+//side,right  sensor 1
 #define trigPin3 6
 #define echoPin3 7
-
+//side,right sensor 2
 #define trigPin4 8
 #define echoPin4 9
-
+//Front Sensor facing downward
 #define trigPin5 10
 #define echoPin5 11
-
+//back Sensor facing downward
 #define trigPin6 12
 #define echoPin6 13
-
+//Front Sensor facing straight
 #define trigPin7 52
 #define echoPin7 53
     
@@ -104,6 +106,23 @@ void StopAll(){
   digitalWrite(blm2,LOW);
   digitalWrite(brm1,LOW);
   digitalWrite(brm2,LOW);
+}
+
+void MoveForward(){
+  digitalWrite(flm1,LOW);
+  digitalWrite(flm2,HIGH);
+  digitalWrite(frm1,LOW);
+  digitalWrite(frm2,HIGH);
+  
+  digitalWrite(blm1,LOW);
+  digitalWrite(blm2,HIGH);
+  digitalWrite(brm1,LOW);
+  digitalWrite(brm2,HIGH);
+}
+
+void U_Turn(){
+  //Uturn
+  
 }
 
 float Read_Sensor(int sensor_number){
@@ -212,11 +231,19 @@ float pid_dist(){
 //  else return 1;
 //}
 //
-void Inter_Distance(){
-    sensor_val[0] = Read_Sensor(1);
-    sensor_val[1] = Read_Sensor(2);
-//    inter_distance = weight * Dist_From_Wall(sensor_val[0],sensor_val[1]) + (1-weight) * dist_to_wall; 
-////    Serial.print("inter_distance :");
+
+
+
+bool IsEdge(){
+  sensor_val[4] = Read_Sensor(5);   //Front Sensor facing downward
+  sensor_val[5] = Read_Sensor(6);   //Back Sensor facing Downward
+
+  if(abs(sensor_val[4]-sensor_val[5])>DEPTH_SENSOR_DIFFERENCE){
+    return(1);
+  }
+  else
+  return(0);
+  
 }
 
 
@@ -275,9 +302,22 @@ void loop() {
   control_movement =(int)data[0];
   
   if(control_movement){
-    //Move Parallel to wall
+
+    if(IsEdge()){
+     //Edge detected 
+     StopAll();
+     total_error=0;
+     U_Turn();
+     FLAG=0;
+    }
     
-      Inter_Distance();
+    else if(FLAG){
+    
+    //Move Parallel to wall
+      MoveForward();
+    
+      sensor_val[0] = Read_Sensor(1);
+      sensor_val[1] = Read_Sensor(2);
       angle_prev = angle_current;
       angle_current= sensor_val[1] - sensor_val[0];
       region=Check_Region(sensor_val[0], sensor_val[1]);
@@ -306,6 +346,43 @@ void loop() {
       
         }
       }
+    }
+    
+    else{
+      //FLAG 0
+      // Going back to starting point after u turn 
+      sensor_val[0] = Read_Sensor(3);
+      sensor_val[1] = Read_Sensor(4);
+      angle_prev = angle_current;
+      angle_current= sensor_val[4] - sensor_val[3];
+      region=Check_Region(sensor_val[4], sensor_val[3]);
+      Serial.print(region);
+      if(region==0 or region==2){
+        analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
+        analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
+        
+        analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
+        analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
+      }
+      else{
+        if(abs(angle_current)>THRESH_ANGLE){
+        analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
+        analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
+        
+        analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
+        analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
+          }
+        else{
+          analogWrite(blm_pwm, (speed_avg +calibration));
+        analogWrite(flm_pwm, (speed_avg +calibration));
+        
+        analogWrite(brm_pwm, speed_avg );
+        analogWrite(frm_pwm, speed_avg);
+      
+        }
+      }
+       
+    }
     
     
   }
