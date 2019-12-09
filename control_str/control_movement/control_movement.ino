@@ -59,12 +59,7 @@ int FLAG=1;
 #define mrm2 32
 #define mrm_pwm 33 
 //Back
-#define blm1 34 
-#define blm2 35
-#define blm_pwm 36 
-#define brm1 37 
-#define brm2 38
-#define brm_pwm 39 
+ 
 
 //Ping Sensor pins
 //side,left back sensor 1
@@ -102,10 +97,7 @@ void StopAll(){
   digitalWrite(mlm2,LOW);
   digitalWrite(mrm1,LOW);
   digitalWrite(mrm2,LOW);
-  digitalWrite(blm1,LOW);
-  digitalWrite(blm2,LOW);
-  digitalWrite(brm1,LOW);
-  digitalWrite(brm2,LOW);
+  
 }
 
 void MoveForward(){
@@ -114,10 +106,6 @@ void MoveForward(){
   digitalWrite(frm1,LOW);
   digitalWrite(frm2,HIGH);
   
-  digitalWrite(blm1,LOW);
-  digitalWrite(blm2,HIGH);
-  digitalWrite(brm1,LOW);
-  digitalWrite(brm2,HIGH);
 }
 
 void U_Turn(){
@@ -265,12 +253,7 @@ void setup() {
   pinMode(mrm1,OUTPUT);
   pinMode(mrm2,OUTPUT);
   pinMode(mrm_pwm,OUTPUT);
-  pinMode(blm1,OUTPUT);
-  pinMode(blm2,OUTPUT);
-  pinMode(blm_pwm,OUTPUT);
-  pinMode(brm1,OUTPUT);
-  pinMode(brm2,OUTPUT);
-  pinMode(brm_pwm,OUTPUT);
+  
 
   pinMode(trigPin1,OUTPUT);
   pinMode(echoPin1,INPUT);
@@ -323,25 +306,25 @@ void loop() {
       region=Check_Region(sensor_val[0], sensor_val[1]);
       Serial.print(region);
       if(region==0 or region==2){
-        analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
+        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
         analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
         
-        analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
+        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
         analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
       }
       else{
         if(abs(angle_current)>THRESH_ANGLE){
-        analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
+        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
         analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
         
-        analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) );
+        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) );
         analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) );
           }
         else{
-          analogWrite(blm_pwm, (speed_avg +calibration));
+          //analogWrite(blm_pwm, (speed_avg +calibration));
         analogWrite(flm_pwm, (speed_avg +calibration));
         
-        analogWrite(brm_pwm, speed_avg );
+        //analogWrite(brm_pwm, speed_avg );
         analogWrite(frm_pwm, speed_avg);
       
         }
@@ -358,25 +341,25 @@ void loop() {
       region=Check_Region(sensor_val[4], sensor_val[3]);
       Serial.print(region);
       if(region==0 or region==2){
-        analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
+        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
         analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
         
-        analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
+        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
         analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
       }
       else{
         if(abs(angle_current)>THRESH_ANGLE){
-        analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
+        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
         analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
         
-        analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
+        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
         analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
           }
         else{
-          analogWrite(blm_pwm, (speed_avg +calibration));
+          //analogWrite(blm_pwm, (speed_avg +calibration));
         analogWrite(flm_pwm, (speed_avg +calibration));
         
-        analogWrite(brm_pwm, speed_avg );
+        //analogWrite(brm_pwm, speed_avg );
         analogWrite(frm_pwm, speed_avg);
       
         }
