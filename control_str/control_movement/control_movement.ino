@@ -43,46 +43,47 @@ int FLAG=1;
 //================================================================================
 //                                   Define pins
 //================================================================================
+//Dc Motors pins, front motor drivers has same pins as back motors for respective sides(left,right)
 //Front Left Motor
-#define flm1 22      //Digital
-#define flm2 23      //Digital
-#define flm_pwm 24   //PWM
+#define flm1 24      //Digital
+#define flm2 25      //Digital
+#define flm_pwm 26   //PWM
 //Front Right Motor  
-#define frm1 25 
-#define frm2 26
-#define frm_pwm 27 
+#define frm1 27 
+#define frm2 28
+#define frm_pwm 30
 //Middle
-#define mlm1 28 
-#define mlm2 29
-#define mlm_pwm 30 
-#define mrm1 31 
-#define mrm2 32
-#define mrm_pwm 33 
+#define mlm1 32 
+#define mlm2 33
+#define mlm_pwm 34 
+#define mrm1 40
+#define mrm2 41
+#define mrm_pwm 42 
 //Back
  
 
-//Ping Sensor pins
+//Ping Sensor pins according to connection on board
 //side,left back sensor 1
-#define trigPin1 2
-#define echoPin1 3
+#define trigPin1 22
+#define echoPin1 23
 //side,left sensor 2
-#define trigPin2 4
-#define echoPin2 5
+#define trigPin2 29
+#define echoPin2 31
 //side,right  sensor 1
-#define trigPin3 6
-#define echoPin3 7
+#define trigPin3 37
+#define echoPin3 39
 //side,right sensor 2
-#define trigPin4 8
-#define echoPin4 9
+#define trigPin4 45
+#define echoPin4 47
 //Front Sensor facing downward
-#define trigPin5 10
-#define echoPin5 11
+#define trigPin5 53
+#define echoPin5 52
 //back Sensor facing downward
-#define trigPin6 12
-#define echoPin6 13
+#define trigPin6 46
+#define echoPin6 44
 //Front Sensor facing straight
-#define trigPin7 52
-#define echoPin7 53
+#define trigPin7 38
+#define echoPin7 36
     
 
 //Recieve task controls from ESP in data
