@@ -45,20 +45,20 @@ int FLAG=1;
 //================================================================================
 //Dc Motors pins, front motor drivers has same pins as back motors for respective sides(left,right)
 //Front Left Motor
-#define flm1 24      //Digital
-#define flm2 25      //Digital
-#define flm_pwm 26   //PWM
+#define flm_dir 32      //Digital
+#define flm_en 14     //Digital
+#define flm_pwm 7   //PWM
 //Front Right Motor  
-#define frm1 27 
-#define frm2 28
-#define frm_pwm 30
+#define frm_dir 17 
+#define frm_en 16
+#define frm_pwm 3
 //Middle
-#define mlm1 32 
-#define mlm2 33
-#define mlm_pwm 34 
-#define mrm1 40
-#define mrm2 41
-#define mrm_pwm 42 
+#define mlm_dir 21 
+#define mlm_en 20
+#define mlm_pwm 1 
+#define mrm_dir 19
+#define mrm_en 18
+#define mrm_pwm 2 
 //Back
  
 
