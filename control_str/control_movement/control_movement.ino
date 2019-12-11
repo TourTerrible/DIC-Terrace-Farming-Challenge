@@ -90,22 +90,22 @@ int FLAG=1;
 byte data[7]; 
 
 void StopAll(){
-  digitalWrite(flm1,LOW);
-  digitalWrite(flm2,LOW);
-  digitalWrite(frm1,LOW);
-  digitalWrite(frm2,LOW);
-  digitalWrite(mlm1,LOW);
-  digitalWrite(mlm2,LOW);
-  digitalWrite(mrm1,LOW);
-  digitalWrite(mrm2,LOW);
+  digitalWrite(,LOW);
+  digitalWrite(flm_en,LOW);
+  digitalWrite(frm_dir,LOW);
+  digitalWrite(frm_en,LOW);
+  digitalWrite(mlm_dir,LOW);
+  digitalWrite(mlm_en,LOW);
+  digitalWrite(mrm_dir,LOW);
+  digitalWrite(mrm_en,LOW);
   
 }
 
 void MoveForward(){
-  digitalWrite(flm1,LOW);
-  digitalWrite(flm2,HIGH);
-  digitalWrite(frm1,LOW);
-  digitalWrite(frm2,HIGH);
+  digitalWrite(,LOW);
+  digitalWrite(flm_en,HIGH);
+  digitalWrite(frm_dir,LOW);
+  digitalWrite(frm_en,HIGH);
   
 }
 
@@ -242,17 +242,17 @@ bool IsEdge(){
 void setup() {
   Serial.begin(9600);
   //Set up pins
-  pinMode(flm1,OUTPUT);
-  pinMode(flm2,OUTPUT);
+  pinMode(flm_dir,OUTPUT);
+  pinMode(flm_en,OUTPUT);
   pinMode(flm_pwm,OUTPUT);
-  pinMode(frm1,OUTPUT);
-  pinMode(frm2,OUTPUT);
+  pinMode(frm_dir,OUTPUT);
+  pinMode(frm_en,OUTPUT);
   pinMode(frm_pwm,OUTPUT);
-  pinMode(mlm1,OUTPUT);
-  pinMode(mlm2,OUTPUT);
+  pinMode(mlm_dir,OUTPUT);
+  pinMode(mlm_en,OUTPUT);
   pinMode(mlm_pwm,OUTPUT);
-  pinMode(mrm1,OUTPUT);
-  pinMode(mrm2,OUTPUT);
+  pinMode(mrm_dir,OUTPUT);
+  pinMode(mrm_en,OUTPUT);
   pinMode(mrm_pwm,OUTPUT);
   
 
