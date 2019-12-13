@@ -1,3 +1,4 @@
+//Serial Data reciever test
 byte data[7]; 
 
 void setup() {

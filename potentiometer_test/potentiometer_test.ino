@@ -1,3 +1,5 @@
+//potentiometer test
+//dc motor
 #define in1 7
 #define in2 8
 #define value 9

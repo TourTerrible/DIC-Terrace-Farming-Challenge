@@ -1,7 +1,7 @@
 //Inter IIT - DIC Event
-//Control structure and functions
 //ESP8266 NODE MCU
 //servo for moisture sensor, stepper for ploughing
+//sendind data ,webpage
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>

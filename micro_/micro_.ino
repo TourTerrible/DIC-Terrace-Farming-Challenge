@@ -1,5 +1,4 @@
 //Inter IIT - DIC Event
-//Control structure and functions
 //Arduino Micro
 //harvesting seeding, up down mechanism
 
