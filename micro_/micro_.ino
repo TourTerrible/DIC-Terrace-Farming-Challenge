@@ -13,17 +13,91 @@
 #define seeding_in1 5       
 #define seeding_in2 4     
 #define seeding_pwm  7
-#define updown_in1  3        
-#define updown_in2  2     
-#define updown_pwm  6
+#define up_down_in1  3        
+#define up_down_in2  2     
+#define up_down_pwm  6
+
+//Global variables to check current job
+
+bool harvest_job = 0;
+bool seeding_job = 0;
+bool up_down_job = 0;
+byte data[4]; 
+
+
+void GoDown(){
+  if(up_down_job){
+    digitalWrite(up_down_in1, HIGH);
+    digitalWrite(up_down_in2, LOW);
+    analogWrite(up_down_pwm, 150);
+  }
+  else {
+    digitalWrite(up_down_in1, LOW);
+    digitalWrite(up_down_in2, LOW);
+  }
+}
+void harvest_func(){
+  if(harvest_job){
+    //Turn on harvester motors
+    data[3]=1;
+    GoDown();
+    digitalWrite(harvest_1_in1, HIGH);
+    digitalWrite(harvest_1_in2, LOW);
+    digitalWrite(harvest_2_in1, HIGH);
+    digitalWrite(harvest_2_in2, LOW);
+    analogWrite(harvest_1_pwm,200);
+    analogWrite(harvest_2_pwm,200);
+  }
+  //Else turn off motors
+  data[3]=0;
+  else digitalWrite(harvest_1_in1, LOW);
+  else digitalWrite(harvest_2_in1, LOW);
+}
+
+void seeding_func(){
+  if(seeding_job){
+    //Turn on seeding motor
+    digitalWrite(seeding_in1, HIGH);
+    digitalWrite(seeding_in2, LOW);
+    analogWrite(seeding_pwm,170);
+  }
+  //Else turn off motors
+  else digitalWrite(seeding_in1, LOW);
+}
+
 
 
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(harvest_1_in1, OUTPUT);
+  pinMode(harvest_1_in2, OUTPUT);
+  pinMode(harvest_1_pwm, OUTPUT);
+  pinMode(harvest_2_in1, OUTPUT);
+  pinMode(harvest_2_in2, OUTPUT);
+  pinMode(harvest_2_pwm, OUTPUT);
+  pinMode(seeding_in1, OUTPUT);
+  pinMode(seeding_in2, OUTPUT);
+  pinMode(seeding_pwm, OUTPUT);
+
+  digitalWrite(harvest_1_in1, LOW);
+  digitalWrite(harvest_1_in2, LOW);
+  digitalWrite(harvest_2_in1, LOW);
+  digitalWrite(harvest_2_in2, LOW);
+  digitalWrite(seeding_in1, LOW);
+  digitalWrite(seeding_in2, LOW);
+  digitalWrite(up_down_in1, LOW);
+  digitalWrite(up_down_in2, LOW);
+  
 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.readBytes(data,4);
+  up_down_job =(int)data[3];
+  harvest_job =(int)data[2];
+  seeding_job = (int) data[1];
+  harvest_func();
+  seeding_func();
+  GoDown();
 
 }
