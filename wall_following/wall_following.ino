@@ -1,5 +1,5 @@
 
-#define kp 10.00                                            
+#define kp 10.00
 #define ki 0.00
 #define kd 2.00
 #define k_dist 2
@@ -10,7 +10,7 @@
 #define weight 0.5
 #define angle_thresh -1.5
 
-float inter_distance = dist_to_wall ; 
+float inter_distance = dist_to_wall ;
 int region=1;
 int dist1,dist2;
 
@@ -98,7 +98,7 @@ float Dist_From_Wall(float val1, float val2){
 //  }
 //  else
 //     return 1;
-//  
+//
 //}
 
 
@@ -111,7 +111,7 @@ int Pid_Angle(float val1,float val2)
   if(angle_current == 0)
     return (constant_speed-speed_avg);
   else
-         error_angle = kp * angle_current + ki * total_error + kd * (angle_current - angle_prev);        
+         error_angle = kp * angle_current + ki * total_error + kd * (angle_current - angle_prev);
 //         Serial.print("correction: ");
 //         Serial.println(error_angle);
          return(error_angle);
@@ -120,7 +120,7 @@ int Pid_Angle(float val1,float val2)
 float pid_dist(){
   float error_dist = k_dist * (inter_distance - Dist_From_Wall(sensor_val[0] ,sensor_val[1]));
   return(error_dist);
-} 
+}
 
  int Check_Region(float val1, float val2){
   int dist =Dist_From_Wall(val1 , val2);
@@ -134,7 +134,7 @@ float pid_dist(){
 void Inter_Distance(){
     sensor_val[0] = Read_Sensor1();
     sensor_val[1] = Read_Sensor2();
-    inter_distance = weight * Dist_From_Wall(sensor_val[0],sensor_val[1]) + (1-weight) * dist_to_wall; 
+    inter_distance = weight * Dist_From_Wall(sensor_val[0],sensor_val[1]) + (1-weight) * dist_to_wall;
 //    Serial.print("inter_distance :");
   Serial.println(inter_distance);
 }
@@ -148,8 +148,8 @@ void setup(){
   pinMode(dir2,OUTPUT);
   pinMode(pwm2,OUTPUT);
   pinMode(dir3,OUTPUT);
-  pinMode(dir4,OUTPUT);                         
-  
+  pinMode(dir4,OUTPUT);
+
   pinMode(trigPin2,OUTPUT);
   pinMode(echoPin2,INPUT);
   pinMode(trigPin1,OUTPUT);
@@ -183,5 +183,5 @@ else{
 }
 
 
-  
+
 }
