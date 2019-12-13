@@ -90,7 +90,7 @@ int FLAG=1;
 byte data[7]; 
 
 void StopAll(){
-  digitalWrite(,LOW);
+  digitalWrite(flm_dir,LOW);
   digitalWrite(flm_en,LOW);
   digitalWrite(frm_dir,LOW);
   digitalWrite(frm_en,LOW);
