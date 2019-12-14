@@ -1,11 +1,17 @@
 //Wall following with PID implementation
-//Guining Pertin
-//11-12-19
+//11-12-19 -- 12-12-19
 
-//MACROS
+//MACROS - TUNABLE PARAMETERS
 #define MAX_DIST 100
-#define MIN_DIST 1
+#define MIN_DIST 2
 #define DISTANCE_PER_SENSORVALUE 0.016f
+#define reach_alpha 5
+#define body_length 70
+#define body_breadth 40
+#define guard_offset 2
+#define turn_offset 40
+#define follow_alpha 50
+#define Kd 1
 
 //Sensor pins
 //Order - left-back, left-front, front, front-bottom, right-front, right-back, back
@@ -29,6 +35,18 @@ const int rsubs_dir = 10;
 const int rsubs_pwm = 11;
 const int rsubs_brk = 12;
 
+//Functions
+void read_ultrasonic();
+void update_distances();
+void reach_distance(float, int, int);
+void follow_wall(float, int, int);
+
+//Global variables
+float distances[7];
+float leftx, leftx1, leftx2, rightx, rightx1, rightx2;
+bool  robot_direction = 0;  //1 for towards red zone
+bool  turning = 0;  //1 when the robot turns
+
 void setup() {
   //Start serial
   Serial.begin(9600);
@@ -51,23 +69,38 @@ void setup() {
     pinMode(trig_pins[i], OUTPUT);
     pinMode(echo_pins[i], INPUT);
   }
+  //Read ultrasonic sensors for initiation
+  read_ultrasonic();
+  //Update important distances
+  update_distances();
 }
 
 void loop() {
-  //Read ultrasonic sensors
-  float *distances = read_ultraonic();
-
+  //Run when not turning
+  if (!turning)  {
+    //Reach distance
+    reach_distance(15, 100, 255);
+    //Follow wall
+    follow_wall(15, 100, 255);
+  }
+  //If turning
+  else  perform_turn();
 }
 
-//Function to give ultrasonic sensor readings
-float* read_ultrasonic() {
-  //Initialize distances array
-  static float distances[7];
+
+
+//Function to save ultrasonic sensor readings to global variable
+void read_ultrasonic() {
   //Sensor value
   float temp_dist;
-  //Take average value(5 readings) for each sensor
+  //Take average value(3 readings) for each sensor
   for(int sen_num = 0; sen_num < 7; sen_num++)  {
-    for(int read_num = 0; read_num < 5; read_num++) {
+    //When not turning, skip sensors not required in given direction 
+    if (!turning) {
+      if (robot_direction && (sen_num == 0 || sen_num == 1 || sen_num == 6))  continue; //Left and back sensors not used
+      else if (!robot_direction && (sen_num == 4 || sen_num == 5 || sen_num == 6))  continue; //Right and back sensors not used
+    }
+    for(int read_num = 0; read_num < 3; read_num++) {
       //Ultrasonic reading
       digitalWrite(trig_pins[sen_num],HIGH);
       delayMicroseconds(10);
@@ -81,7 +114,112 @@ float* read_ultrasonic() {
       distances[sen_num] += temp_dist;
     }
     //Average
-    distances[sen_num] = distances[sen_num]/5;
+    distances[sen_num] = distances[sen_num]/3;
   }
-  return distances
+}
+
+//Function to update important distances
+void update_distances() {
+  leftx1 = body_length*distances[0]/sqrt(pow(distances[0]-distances[1], 2) + pow(body_length, 2));
+  leftx2 = body_length*distances[1]/sqrt(pow(distances[0]-distances[1], 2) + pow(body_length, 2));
+  rightx1 = body_length*distances[5]/sqrt(pow(distances[5]-distances[4], 2) + pow(body_length, 2));
+  rightx2 = body_length*distances[4]/sqrt(pow(distances[5]-distances[4], 2) + pow(body_length, 2));
+  leftx = (leftx1 + leftx2)/2;
+  rightx = (rightx1 + rightx2)/2;
+}
+
+//Function to reach particular distance
+void reach_distance(float d_req, int v_min, int v_max) {
+  //Proportional controller
+  float error = 0;
+  float Kp = 0;
+  float input = 0;
+  float x = 0;
+  float v0 = (v_max + v_min)/2;
+  //Run until guard
+  while(1)  {
+    //Read ultrasonic sensors
+    read_ultrasonic();
+    //Update important distances
+    update_distances();
+    //Define which x to use depending on the direction
+    if (robot_direction) x = rightx;
+    else x = leftx;
+    //Update error term
+    error = d_req - x;
+    //Check guard condition - needs blending
+    if (abs(error) < guard_offset)  break;
+    //Update proportional gain
+    Kp = (float)(v0-v_min)*(1-exp(reach_alpha*(error*error)))/abs(error);
+    //Set input
+    input = Kp*error;
+    //Provide input to speed
+    analogWrite(lmain_pwm, v0+(int)input);
+    analogWrite(rmain_pwm, v0-(int)input);
+    //Check if turn is necessary
+    check_turn();
+  }
+}
+
+//Function to follow wall
+void follow_wall(float d_req, int v_min, int v_max)  {
+  //PD Controller
+  float error = 0;
+  float Kp = 0;
+  float input = 0;
+  float v0 = (v_max + v_min)/2;
+  float prev_error = 0;
+  float x = 0;
+  float x1 = 0;
+  float x2 = 0;
+  //Run until guard
+  while(1)  {
+    //Read ultrasonic sensors
+    read_ultrasonic();
+    //Update important distances
+    update_distances();
+    //Define which x,x1,x2 to use depending on the direction eg-
+    if (robot_direction)  {
+      x  = rightx;
+      x1 = rightx1;
+      x2 = rightx2;
+    }
+    else  {
+      x  = leftx;
+      x1 = leftx1;
+      x2 = leftx2;
+    }
+    //First check guard condition
+    if (abs(d_req - x) < guard_offset) break;
+    //Update error term
+    error = x1 - x2;
+    //Proportional gain
+    Kp = (float)(v0-v_min)*(1-exp(follow_alpha*(error*error)))/abs(error);
+    //Set input
+    input = Kp*error + Kd*(error - prev_error);
+    //Set previous error
+    prev_error = error;
+    //Provide input to speed
+    analogWrite(lmain_pwm, v0+(int)input);
+    analogWrite(rmain_pwm, v0-(int)input);
+    //Check if turn is necessary
+    check_turn();
+  }
+  
+}
+
+//Function to check turn condition
+void check_turn() {
+  //Read ultrasonic sensors
+  read_ultrasonic();
+  //Update important distances
+  update_distances();
+  //If front distance is less than offset
+  if (distances[2] < turn_offset) turning = 1;
+}
+
+//Function to perform turn
+void perform_turn() {
+
+  
 }
