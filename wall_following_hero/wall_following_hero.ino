@@ -1,5 +1,7 @@
 //Wall following with PID implementation
-//11-12-19 -- 12-12-19
+//Robotics Club - DIC Terrace Farming Robot
+//Inter IIT Tech Meet 2019
+//11-12-19 -> ____
 
 //MACROS - TUNABLE PARAMETERS
 #define MAX_DIST 100
@@ -73,6 +75,19 @@ void setup() {
   read_ultrasonic();
   //Update important distances
   update_distances();
+  //Pins initial state
+  digitalWrite(lmain_dir, LOW);
+  digitalWrite(lmain_pwm, LOW);
+  digitalWrite(lmain_brk, HIGH);
+  digitalWrite(rmain_dir, LOW);
+  digitalWrite(rmain_pwm, LOW);
+  digitalWrite(rmain_brk, HIGH);
+  digitalWrite(lsubs_dir, LOW);
+  digitalWrite(lsubs_pwm, LOW);
+  digitalWrite(lsubs_brk, HIGH);
+  digitalWrite(rsubs_dir, LOW);
+  digitalWrite(rsubs_pwm, LOW);
+  digitalWrite(rsubs_brk, HIGH);
 }
 
 void loop() {
@@ -86,8 +101,6 @@ void loop() {
   //If turning
   else  perform_turn();
 }
-
-
 
 //Function to save ultrasonic sensor readings to global variable
 void read_ultrasonic() {
@@ -107,9 +120,8 @@ void read_ultrasonic() {
       digitalWrite(trig_pins[sen_num],LOW);
       temp_dist = pulseIn(echo_pins[sen_num],HIGH) * DISTANCE_PER_SENSORVALUE;
       //Limits
-      if (temp_dist > MAX_DIST || temp_dist < MIN_DIST)  {
-        temp_dist = 0;
-      }
+      if (temp_dist > MAX_DIST)  temp_dist = MAX_DIST;
+      else if (temp_dist < MIN_DIST)  test_dist = MIN_DIST;
       //Update distance
       distances[sen_num] += temp_dist;
     }
@@ -157,7 +169,10 @@ void reach_distance(float d_req, int v_min, int v_max) {
     analogWrite(lmain_pwm, v0+(int)input);
     analogWrite(rmain_pwm, v0-(int)input);
     //Check if turn is necessary
-    check_turn();
+    if (distances[2] < turn_offset) {
+      turning = 1;
+      break;
+    }
   }
 }
 
@@ -203,23 +218,30 @@ void follow_wall(float d_req, int v_min, int v_max)  {
     analogWrite(lmain_pwm, v0+(int)input);
     analogWrite(rmain_pwm, v0-(int)input);
     //Check if turn is necessary
-    check_turn();
+    if (distances[2] < turn_offset) {
+      turning = 1;
+      break;
+    }
   }
-  
-}
-
-//Function to check turn condition
-void check_turn() {
-  //Read ultrasonic sensors
-  read_ultrasonic();
-  //Update important distances
-  update_distances();
-  //If front distance is less than offset
-  if (distances[2] < turn_offset) turning = 1;
 }
 
 //Function to perform turn
-void perform_turn() {
-
-  
-}
+void perform_turn(int turn_vel) {
+  //Reverse velocities on opp sides until condition
+  while(1)  {
+    //Read ultrasonic sensors
+    read_ultrasonic();
+    //Update important distances
+    update_distances();
+    //Guard condition - back range, front max, left max, right range
+    if(distances[6] < turn_offset, distances[2] >= MAX_DIST, leftx >= MAX_DIST, rightx < turn_offset) {
+      turning = 0;
+      robot_direction = 1;
+      break;
+    }
+    //Velocities
+    analogWrite(lmain_pwm, turn_vel);
+    digitalWrite(rmain_dir, HIGH);
+    analogWrite(rmain_pwm, turn_vel);
+  }
+} 
