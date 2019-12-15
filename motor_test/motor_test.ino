@@ -1,3 +1,5 @@
+//Motor_Test
+
 #define flm_dir 32      //Digital
 #define flm_en 14     //Digital
 #define flm_pwm 7   //PWM
@@ -12,6 +14,7 @@
 #define mrm_dir 19
 #define mrm_en 18
 #define mrm_pwm 2 
+int SPEED =50;
 
 void setup() {
   pinMode(flm_dir,OUTPUT);
@@ -42,16 +45,16 @@ void loop() {
   
   digitalWrite(flm_dir,HIGH);
   digitalWrite(flm_en,LOW);
-  analogWrite(flm_pwm,150);
+  analogWrite(flm_pwm,SPEED);
   digitalWrite(frm_dir,HIGH);
   digitalWrite(frm_en,LOW);
-  analogWrite(frm_pwm,250);
+  analogWrite(frm_pwm,SPEED);
   digitalWrite(mlm_dir,HIGH);
   digitalWrite(mlm_en,LOW);
-  analogWrite(mlm_pwm,150);
+  analogWrite(mlm_pwm,SPEED);
   digitalWrite(mrm_dir,HIGH);
   digitalWrite(mrm_en,LOW);
-  analogWrite(mrm_pwm,250);
+  analogWrite(mrm_pwm,SPEED);
  
 
 }
