@@ -11,8 +11,7 @@
 #define stepper_dir      D0       
 #define stepper_en       D1    
 #define stepper_step     D2
-#define moisture_pin     A0  //Analog In
-#define moisture_servo   D8        
+#define moisture_pin     A0  //Analog In        
 #define extra_pin_1      D3  
 #define extra_pin_2      D4
 #define extra_pin_3      D5
@@ -29,6 +28,7 @@ bool plough_job=0;
 bool moisture_job=0;
 bool down_job=0;
 bool up_job=0;
+bool water_job=0;
 //{start_stop,seeding,harvest,down,up}
 
 ESP8266WebServer server(80);
@@ -189,12 +189,12 @@ void handleHarvesting() {
 }
 
 void handleSide() {  
-  side_solenoid_job=!side_solenoid_job
+  side_solenoid_job=!side_solenoid_job;
   server.sendHeader("Location","/");        
   server.send(303);                         
 }
 void handleCenter() {  
-  center_solenoid_job=!center_solenoid_job
+  center_solenoid_job=!center_solenoid_job;
   server.sendHeader("Location","/");        
   server.send(303);                         
 }
@@ -207,17 +207,11 @@ void handlePloughing() {
 
 void handleMoisture() { 
   //up_down_motor_go_down
-  data[3]=1; 
-  delay(5000);
-  moisture_job=1;
+  moisture_job=!moisture_job;
   server.sendHeader("Location","/");        
   server.send(303);                         
 }
-void handlePloughing() {  
-  plough_job=!plough_job;
-  server.sendHeader("Location","/");        
-  server.send(303);                         
-}
+
 
 void handleDown() {  
   down_job=!down_job;
@@ -253,38 +247,51 @@ int moisture_func(){
     if (moisture_val < 512)water_job = 1;
     //Complete moisture detection work
     moisture_job = 0;
+    for(int i=180; i>=1; i--){
+      moisture_servo.write(i);
+    }
   }
   //Else no watering
   else water_job = 0;
 }
 
 void watering_func(){
-  if (water_job){
-    ControlPump();
-    if(solenoid_side){
-      //Turn on side solenoid
-      digitalWrite(solenoid_side_pin, HIGH);
-    }
-    else{
-      //Turn off side solenoid
-      digitalWrite(solenoid_side_pin, LOW);
-    }
-    if(solenoid_center){
-     //Turn on center solenoid 
-     digitalWrite(solenoid_center_pin, HIGH);
-    }
-    else{
-      //Turn off center solenoid
-      digitalWrite(solenoid_center_pin, LOW);
-    }
+//  if (water_job){
+//    ControlPump();
+//    if(solenoid_side){
+//      //Turn on side solenoid
+//      digitalWrite(solenoid_side_pin, HIGH);
+//    }
+//    else{
+//      //Turn off side solenoid
+//      digitalWrite(solenoid_side_pin, LOW);
+//    }
+//    if(solenoid_center){
+//     //Turn on center solenoid 
+//     digitalWrite(solenoid_center_pin, HIGH);
+//    }
+//    else{
+//      //Turn off center solenoid
+//      digitalWrite(solenoid_center_pin, LOW);
+//    }
+//    
+//}
+//else{
+//  //Turn off pump
+//  analogWrite(pump_pin_pwm, LOW);
+//  digitalWrite(pump_pin1, LOW);
+//  digitalWrite(pump_pin2, LOW); 
+//}
+}
+
+void ploughing_func(){
+  if(plough_job){
     
-}
-else{
-  //Turn off pump
-  analogWrite(pump_pin_pwm, LOW);
-  digitalWrite(pump_pin1, LOW);
-  digitalWrite(pump_pin2, LOW); 
-}
+  }
+  else{
+    
+  }
+  
 }
 
 void ControlPump(){
@@ -343,6 +350,16 @@ WiFi.config(ip, gateway, subnet);
   server.begin();   
                
   Serial.println("HTTP server started");
+
+  moisture_servo.attach(D8);
+  pinMode(stepper_dir,OUTPUT);
+  pinMode(stepper_en,OUTPUT);
+  pinMode(stepper_step,OUTPUT);
+  pinMode(moisture_pin,INPUT);
+  pinMode(extra_pin_1,OUTPUT);
+  pinMode(extra_pin_2,OUTPUT);
+  pinMode(extra_pin_3,OUTPUT);
+  pinMode(extra_pin_4,OUTPUT);
 }
 //===============================================================
 //                     LOOP

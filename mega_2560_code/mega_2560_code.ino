@@ -2,15 +2,15 @@
 //AutoNavigation, pid, Movement
 //Arduino Mega 2560
 
-#define kp 5.00                                            
+#define kp 6.00                                            
 #define ki 0.00
-#define kd 5.00
+#define kd 6.00
 #define k_dist 3
 
 #define dist_to_wall 30.0
 #define error 2.5
 #define weight 0.5
-#define angle_thresh -1.5
+#define angle_thresh -5.5
 
 float inter_distance = dist_to_wall ; 
 int region=1;
@@ -33,8 +33,8 @@ int THRESH_VALUE=10;
 int MAX_CORREC=15;
 int THRESH_ANGLE=1;
 int constant_speed=100;
-int speed_avg=200;
-int calibration=0;
+int speed_avg=140;
+int calibration=80;
 int FLAG=1;
 
 
@@ -286,8 +286,9 @@ void setup() {
 //======================================================================================
 
 void loop() {
-  Serial.readBytes(data,4);
+  Serial.readBytes(data,5);
   control_movement =(int)data[0];
+  Serial.println(control_movement);
   
   if(control_movement){
 
@@ -338,45 +339,48 @@ void loop() {
     else{
       MoveBackward();
       //FLAG 0
-      // Going back to starting point after u turn 
-      sensor_val[0] = Read_Sensor(3);
-      sensor_val[1] = Read_Sensor(4);
+      // Going back to starting point
+    
+      sensor_val[1] = Read_Sensor(1);
+      sensor_val[0] = Read_Sensor(2);
       angle_prev = angle_current;
-      angle_current= sensor_val[4] - sensor_val[3];
-      region=Check_Region(sensor_val[4], sensor_val[3]);
-      Serial.print(region);
+      angle_current= sensor_val[1] - sensor_val[0];
+      region=Check_Region(sensor_val[0], sensor_val[1]);
+      //Serial.print(region);
       if(region==0 or region==2){
+        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
+        analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
         
-        analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
-        
-        
-        analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
+        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
+        analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
       }
       else{
         if(abs(angle_current)>THRESH_ANGLE){
-       
-        analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
+        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
+        analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
         
-       
-        analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
+        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) );
+        analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) );
           }
         else{
-        
+          //analogWrite(blm_pwm, (speed_avg +calibration));
         analogWrite(flm_pwm, (speed_avg +calibration));
         
-        
+        //analogWrite(brm_pwm, speed_avg );
         analogWrite(frm_pwm, speed_avg);
       
         }
       }
-       
-    }
     
     
+     }
   }
+
+
+
+  
   else{
      StopAll(); 
   }
- 
   
 }
