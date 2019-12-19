@@ -1,7 +1,7 @@
 #define kp 20                                            
 #define ki 0.00
 #define kd 20.00
-//#define k_dist 5
+#define k_dist 8
 
 #define dist_to_wall 40.0
 #define error 2.5
@@ -12,7 +12,7 @@
 float inter_distance = dist_to_wall ; 
 int region=1;
 int dist1,dist2;
-float k_dist;
+
 
 volatile float sensor_val[2];
 float error_angle = 0;
@@ -168,7 +168,7 @@ void setup(){
 
 void loop()
 {
- k_dist= analogRead(kp_poten)/50.0;
+
 //
 //  Serial.println(kp);
 // kd= analogRead(kd_poten)/20.0;

@@ -20,26 +20,45 @@
 
 bool harvest_job = 0;
 bool seeding_job = 0;
-bool up_down_job = 0;
-byte data[4]; 
+bool down_job = 0;
+bool up_job = 0;
+byte data[5]; 
 
 
 void GoDown(){
-  if(up_down_job){
+  if(down_job){
     digitalWrite(up_down_in1, HIGH);
     digitalWrite(up_down_in2, LOW);
     analogWrite(up_down_pwm, 150);
+    
   }
-  else {
+  else{
     digitalWrite(up_down_in1, LOW);
     digitalWrite(up_down_in2, LOW);
   }
+  
 }
+
+void GoUp(){
+  if(up_job){
+   
+    digitalWrite(up_down_in1, LOW);
+    digitalWrite(up_down_in2, HIGH);
+    analogWrite(up_down_pwm, 150);
+    
+  }
+  else{
+    digitalWrite(up_down_in1, LOW);
+    digitalWrite(up_down_in2, LOW);
+  }
+ 
+}
+
+ 
+
 void harvest_func(){
   if(harvest_job){
     //Turn on harvester motors
-    data[3]=1;
-    GoDown();
     digitalWrite(harvest_1_in1, HIGH);
     digitalWrite(harvest_1_in2, LOW);
     digitalWrite(harvest_2_in1, HIGH);
@@ -48,9 +67,10 @@ void harvest_func(){
     analogWrite(harvest_2_pwm,200);
   }
   //Else turn off motors
-  data[3]=0;
-  else digitalWrite(harvest_1_in1, LOW);
-  else digitalWrite(harvest_2_in1, LOW);
+  else{
+    digitalWrite(harvest_1_in1, LOW);
+  digitalWrite(harvest_2_in1, LOW);
+  }
 }
 
 void seeding_func(){
@@ -68,6 +88,7 @@ void seeding_func(){
 
 void setup() {
   Serial.begin(9600);
+  Serial1.begin(9600);
   pinMode(harvest_1_in1, OUTPUT);
   pinMode(harvest_1_in2, OUTPUT);
   pinMode(harvest_1_pwm, OUTPUT);
@@ -91,12 +112,14 @@ void setup() {
 }
 
 void loop() {
-  Serial.readBytes(data,4);
-  up_down_job =(int)data[3];
+  Serial1.readBytes(data,5);
+  up_job =(int)data[4];
+  down_job =(int)data[3];
   harvest_job =(int)data[2];
   seeding_job = (int) data[1];
   harvest_func();
   seeding_func();
   GoDown();
+  GoUp();
 
 }

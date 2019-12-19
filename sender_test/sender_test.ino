@@ -1,6 +1,6 @@
 //Serial Rx Tx data sender 
 //String data
- byte data[]={3,234};
+byte data[]={5,1,3,9};
 
 void setup() {
   // Begin the Serial at 9600 Baud
@@ -8,6 +8,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.write(data,2); //Write the serial data
+  Serial.write(data,4); //Write the serial data
   delay(1000);
 }

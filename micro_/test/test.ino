@@ -50,15 +50,15 @@ void loop() {
     digitalWrite(harvest_1_in2, LOW);
     digitalWrite(harvest_2_in1, HIGH);
     digitalWrite(harvest_2_in2, LOW);
-    analogWrite(harvest_1_pwm,100);
-    analogWrite(harvest_2_pwm,100);
+    analogWrite(harvest_1_pwm,200);
+    analogWrite(harvest_2_pwm,200);
 
     digitalWrite(seeding_in1, HIGH);
     digitalWrite(seeding_in2, LOW);
-    analogWrite(seeding_pwm,170);
+    analogWrite(seeding_pwm,200);
 
     digitalWrite(up_down_in1, HIGH);
     digitalWrite(up_down_in2, LOW);
-    analogWrite(up_down_pwm, 150);
+    analogWrite(up_down_pwm, 200);
 
 }

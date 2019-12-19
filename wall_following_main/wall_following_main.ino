@@ -1,7 +1,7 @@
-#define kp 10.00                                            
+#define kp 5.00                                            
 #define ki 0.00
-#define kd 10.00
-#define k_dist 5.0
+#define kd 5.00
+#define k_dist 2.0
 
 #define dist_to_wall 40.0
 #define error 2.5
@@ -23,13 +23,13 @@ int angle_prev,angle_current;
 float DISTANCE_PER_SENSORVALUE=.017;
 int MAX_SENSOR_READING=4000;
 int LARGE_SENSOR_READING=15000;
-int CONSTANT_DIST=20;
+int CONSTANT_DIST=40;
 int THRESH_DIST=5;
 int THRESH_VALUE=10;
 int MAX_CORREC=15;
 int THRESH_ANGLE=1;
-int speed_avg=60;
-int calibration=0;
+int speed_avg=140;
+int calibration=80;
 bool dir_left=HIGH;
 bool dir_right=HIGH;
 
@@ -187,40 +187,40 @@ if(region==0 or region==2){
  
   analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
   analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
-//  Serial.print("error_dist :");
-//  Serial.print(pid_dist());
-//  Serial.print("\t");
-//    Serial.print("error_angle :");
-//  Serial.print(Pid_Angle(sensor_val[0],sensor_val[1]));
-//  Serial.print("\t");
-//  Serial.print("pwm2 :");
-//  Serial.print((speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
-//  Serial.print("\t");
-//   Serial.print("pwm1 :");
-//  Serial.print(speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
-//  Serial.print("\t");
+  Serial.print("error_dist :");
+  Serial.print(pid_dist());
+  Serial.print("\t");
+    Serial.print("error_angle :");
+  Serial.print(Pid_Angle(sensor_val[0],sensor_val[1]));
+  Serial.print("\t");
+  Serial.print("pwm2 :");
+  Serial.print((speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]) + pid_dist());
+  Serial.print("\t");
+   Serial.print("pwm1 :");
+  Serial.print(speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]) - pid_dist());
+  Serial.println("\t");
 }
 else{
   if(abs(angle_current)>THRESH_ANGLE){
     analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
     analogWrite(frm_pwm, speed_avg - Pid_Angle(sensor_val[0],sensor_val[1]));
-//      Serial.print("pwm2 :");
-//  Serial.print((speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
-//  Serial.print("\t");
-//   Serial.print("pwm1 :");
-//  Serial.print(speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]));
-//  Serial.print("\t");
+      Serial.print("pwm2 :");
+  Serial.print((speed_avg +calibration) + Pid_Angle(sensor_val[0],sensor_val[1]));
+  Serial.print("\t");
+   Serial.print("pwm1 :");
+  Serial.print(speed_avg- Pid_Angle(sensor_val[0],sensor_val[1]));
+  Serial.println("\t");
     }
   else{
     analogWrite(flm_pwm, (speed_avg +calibration));
     analogWrite(frm_pwm, speed_avg);
-//      Serial.print("pwm2 :");
-//  Serial.print((speed_avg +calibration) );
-//  Serial.print("\t");
-//   Serial.print("pwm1 :");
-//  Serial.print(speed_avg);
-//  Serial.print("\t");
- }
+      Serial.print("pwm2 :");
+  Serial.print((speed_avg +calibration) );
+  Serial.print("\t");
+   Serial.print("pwm1 :");
+  Serial.print(speed_avg);
+  Serial.println("\t");
+}
 }
 
 

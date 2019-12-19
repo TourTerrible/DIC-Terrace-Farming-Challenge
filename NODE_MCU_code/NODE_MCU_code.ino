@@ -20,14 +20,16 @@
 
 const char* ssid = "DIC_IITG";
 const char* password = "12345678";
-byte data[]={0,0,0,0};
+byte data[]={0,0,0,0,0};
 Servo moisture_servo; 
 
 bool center_solenoid_job=0;
 bool side_solenoid_job=0;
 bool plough_job=0;
 bool moisture_job=0;
-//{start_stop,seeding,harvest,up_down}
+bool down_job=0;
+bool up_job=0;
+//{start_stop,seeding,harvest,down,up}
 
 ESP8266WebServer server(80);
 const char INDEX_HTML[] =
@@ -80,6 +82,7 @@ const char INDEX_HTML[] =
         "grid-row-gap: 10px;"
         
      "}"
+     
 
 
     
@@ -132,6 +135,19 @@ const char INDEX_HTML[] =
 "<form action=\"/harvesting\" method=\"POST\">"
   "<input type=\"submit\" value=\"Harvesting\">"
 "</form>"
+"</div>"
+
+"<div class = \"container3\">"
+
+
+"<form action=\"/go_down\" method=\"POST\">"
+  "<input type=\"submit\" value=\"Down\">"
+"</form>"
+
+"<form action=\"/go_up\" method=\"POST\">"
+  "<input type=\"submit\" value=\"Up\">"
+"</form>"
+
 "</div>"
 
 
@@ -192,10 +208,28 @@ void handlePloughing() {
 void handleMoisture() { 
   //up_down_motor_go_down
   data[3]=1; 
+  delay(5000);
   moisture_job=1;
   server.sendHeader("Location","/");        
   server.send(303);                         
 }
+void handlePloughing() {  
+  plough_job=!plough_job;
+  server.sendHeader("Location","/");        
+  server.send(303);                         
+}
+
+void handleDown() {  
+  down_job=!down_job;
+  server.sendHeader("Location","/");        
+  server.send(303);                         
+}
+void handleUp() {  
+  up_job=!up_job;
+  server.sendHeader("Location","/");        
+  server.send(303);                         
+}
+
 
 int moisture_func(){
   //If moisture needs to be checked
@@ -302,6 +336,9 @@ WiFi.config(ip, gateway, subnet);
   server.on("/center", HTTP_POST, handleCenter);
   server.on("/ploughing", HTTP_POST, handlePloughing);
   server.on("/moisture", HTTP_POST, handleMoisture);
+  server.on("/go_up", HTTP_POST, handleUp);
+  server.on("/go_down", HTTP_POST, handleDown);
+  
   
   server.begin();   
                
@@ -313,7 +350,7 @@ WiFi.config(ip, gateway, subnet);
 
 void loop() {
   server.handleClient();
-  Serial.write(data,4);
+  Serial.write(data,5);
   moisture_func();
   ploughing_func();
   watering_func(); 

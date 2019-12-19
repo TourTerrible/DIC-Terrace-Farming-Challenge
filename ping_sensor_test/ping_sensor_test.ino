@@ -106,6 +106,12 @@ void loop() {
   // put your main code here, to run repeatedly:
   Serial.print(Read_Sensor(1));
   Serial.print("\t");
-  Serial.println(Read_Sensor(2));
+  Serial.print(Read_Sensor(2));
+  Serial.print("\t");
+  Serial.print(Read_Sensor(3));
+  Serial.print("\t");
+  Serial.print(Read_Sensor(4));
+  Serial.print("\t");
+  Serial.println(Read_Sensor(5));
 
 }

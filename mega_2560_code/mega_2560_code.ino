@@ -2,14 +2,13 @@
 //AutoNavigation, pid, Movement
 //Arduino Mega 2560
 
-#define kp 1.50                                            
+#define kp 5.00                                            
 #define ki 0.00
-#define kd 1.00
+#define kd 5.00
 #define k_dist 3
 
-#define dist_to_wall 40.0
+#define dist_to_wall 30.0
 #define error 2.5
-#define pwm 100
 #define weight 0.5
 #define angle_thresh -1.5
 
@@ -27,15 +26,15 @@ bool control_movement;
 float DISTANCE_PER_SENSORVALUE=.017;
 int MAX_SENSOR_READING=4000;
 int LARGE_SENSOR_READING=15000;
-int DEPTH_SENSOR_DIFFERENCE=20;
-int CONSTANT_DIST=20;
+int THRESH_EDGE_DIFFERENCE=10;
+int CONSTANT_DIST=10;
 int THRESH_DIST=5;
 int THRESH_VALUE=10;
 int MAX_CORREC=15;
 int THRESH_ANGLE=1;
 int constant_speed=100;
-int speed_avg=120;
-int calibration=50;
+int speed_avg=200;
+int calibration=0;
 int FLAG=1;
 
 
@@ -55,7 +54,7 @@ int FLAG=1;
 //Middle
 #define mlm_dir 21 
 #define mlm_en 20
-#define mlm_pwm 1 
+#define mlm_pwm 5
 #define mrm_dir 19
 #define mrm_en 18
 #define mrm_pwm 2 
@@ -90,29 +89,34 @@ int FLAG=1;
 byte data[4]; 
 
 void StopAll(){
-  digitalWrite(flm_dir,LOW);
-  digitalWrite(flm_en,LOW);
-  digitalWrite(frm_dir,LOW);
-  digitalWrite(frm_en,LOW);
-  digitalWrite(mlm_dir,LOW);
-  digitalWrite(mlm_en,LOW);
-  digitalWrite(mrm_dir,LOW);
-  digitalWrite(mrm_en,LOW);
+  
+  digitalWrite(flm_en,HIGH);
+  
+  digitalWrite(frm_en,HIGH);
+  
+  digitalWrite(mlm_en,HIGH);
+ 
+  digitalWrite(mrm_en,HIGH);
   
 }
 
 void MoveForward(){
-  digitalWrite(,LOW);
-  digitalWrite(flm_en,HIGH);
-  digitalWrite(frm_dir,LOW);
-  digitalWrite(frm_en,HIGH);
+  digitalWrite(flm_dir,HIGH);
+  digitalWrite(flm_en,LOW);
+  digitalWrite(frm_dir,HIGH);
+  digitalWrite(frm_en,LOW);
   
 }
 
-void U_Turn(){
-  //Uturn
+void MoveBackward(){
+  digitalWrite(flm_dir,LOW);
+  digitalWrite(flm_en,LOW);
+  digitalWrite(frm_dir,LOW);
+  digitalWrite(frm_en,LOW);
   
 }
+
+
 
 float Read_Sensor(int sensor_number){
 float sensor_value, dist ;
@@ -224,10 +228,10 @@ float pid_dist(){
 
 
 bool IsEdge(){
-  sensor_val[4] = Read_Sensor(5);   //Front Sensor facing downward
-  sensor_val[5] = Read_Sensor(6);   //Back Sensor facing Downward
+//Read_Sensor(5);   //Front Sensor 
+ 
 
-  if(abs(sensor_val[4]-sensor_val[5])>DEPTH_SENSOR_DIFFERENCE){
+  if(Read_Sensor(5)<THRESH_EDGE_DIFFERENCE){
     return(1);
   }
   else
@@ -291,7 +295,6 @@ void loop() {
      //Edge detected 
      StopAll();
      total_error=0;
-     U_Turn();
      FLAG=0;
     }
     
@@ -333,6 +336,7 @@ void loop() {
     }
     
     else{
+      MoveBackward();
       //FLAG 0
       // Going back to starting point after u turn 
       sensor_val[0] = Read_Sensor(3);
@@ -342,25 +346,25 @@ void loop() {
       region=Check_Region(sensor_val[4], sensor_val[3]);
       Serial.print(region);
       if(region==0 or region==2){
-        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
+        
         analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]) + pid_dist());
         
-        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
+        
         analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) - pid_dist());
       }
       else{
         if(abs(angle_current)>THRESH_ANGLE){
-        //analogWrite(blm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
+       
         analogWrite(flm_pwm, (speed_avg +calibration) + Pid_Angle(sensor_val[3],sensor_val[4]));
         
-        //analogWrite(brm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
+       
         analogWrite(frm_pwm, speed_avg- Pid_Angle(sensor_val[3],sensor_val[4]) );
           }
         else{
-          //analogWrite(blm_pwm, (speed_avg +calibration));
+        
         analogWrite(flm_pwm, (speed_avg +calibration));
         
-        //analogWrite(brm_pwm, speed_avg );
+        
         analogWrite(frm_pwm, speed_avg);
       
         }

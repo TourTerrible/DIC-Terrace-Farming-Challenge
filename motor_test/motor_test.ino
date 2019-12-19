@@ -10,11 +10,15 @@
 //Middle
 #define mlm_dir 21 
 #define mlm_en 20
-#define mlm_pwm 1 
+#define mlm_pwm 5
 #define mrm_dir 19
 #define mrm_en 18
 #define mrm_pwm 2 
-int SPEED =50;
+
+int Speed_Main =140;
+
+int Calibration=80;
+
 
 void setup() {
   pinMode(flm_dir,OUTPUT);
@@ -45,16 +49,11 @@ void loop() {
   
   digitalWrite(flm_dir,HIGH);
   digitalWrite(flm_en,LOW);
-  analogWrite(flm_pwm,SPEED);
+  analogWrite(flm_pwm,Speed_Main+Calibration);
   digitalWrite(frm_dir,HIGH);
   digitalWrite(frm_en,LOW);
-  analogWrite(frm_pwm,SPEED);
-  digitalWrite(mlm_dir,HIGH);
-  digitalWrite(mlm_en,LOW);
-  analogWrite(mlm_pwm,SPEED);
-  digitalWrite(mrm_dir,HIGH);
-  digitalWrite(mrm_en,LOW);
-  analogWrite(mrm_pwm,SPEED);
+  analogWrite(frm_pwm,Speed_Main);
+  
  
 
 }

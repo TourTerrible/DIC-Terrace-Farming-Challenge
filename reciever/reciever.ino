@@ -1,5 +1,5 @@
 //Serial Data reciever test
-byte data[7]; 
+byte data[4]; 
 
 void setup() {
   // Begin the Serial at 9600 Baud
@@ -7,20 +7,16 @@ void setup() {
 }
 //{start,pump,side,center,seeding,plough,harvest}
 void loop() {
-  Serial.readBytes(data,7); 
+  Serial.readBytes(data,4); 
   Serial.print(data[0]);
   Serial.print("  ") ;
   Serial.print(data[1]);
   Serial.print("  "); 
   Serial.print(data[2]);
   Serial.print("  ") ;
-  Serial.print(data[3]);
-  Serial.print("  ") ;
-  Serial.print(data[4]);
-  Serial.print("  ") ;
-  Serial.print(data[5]); 
-  Serial.print("  ") ;
-  Serial.println(data[6]);
+  Serial.println(data[3]);
+ 
+  
  
   
 }
