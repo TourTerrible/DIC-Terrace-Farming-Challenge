@@ -1,3 +1,5 @@
+//pid Tuned for DIC 
+ 
 #define kp 5.00                                            
 #define ki 0.00
 #define kd 5.00

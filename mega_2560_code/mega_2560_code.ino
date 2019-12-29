@@ -1,6 +1,7 @@
 //Inter IIT - DIC Event
 //AutoNavigation, pid, Movement
 //Arduino Mega 2560
+// parallel to wall
 
 #define kp 6.00                                            
 #define ki 0.00

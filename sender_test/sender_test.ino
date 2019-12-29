@@ -1,5 +1,4 @@
 //Serial Rx Tx data sender 
-//String data
 byte data[]={5,1,3,9};
 
 void setup() {

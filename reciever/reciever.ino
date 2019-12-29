@@ -1,4 +1,4 @@
-//Serial Data reciever test
+//Serial Rx-Tx Data reciever test
 byte data[4]; 
 
 void setup() {

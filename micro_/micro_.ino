@@ -1,6 +1,7 @@
 //Inter IIT - DIC Event
 //Arduino Micro
 //harvesting seeding, up down mechanism
+//Recieving data from esp8266
 
 #define harvest_1_in1 11       
 #define harvest_1_in2 10     

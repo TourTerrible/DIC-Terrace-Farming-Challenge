@@ -1,4 +1,5 @@
 //side,left back sensor 1
+//Ping sensor reading test with pcb board
 
 
 #define trigPin1 22

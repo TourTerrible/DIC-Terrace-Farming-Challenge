@@ -1,5 +1,5 @@
-//potentiometer test
-//dc motor
+//potentiometer test to control pwm of dc motor for seeding
+
 #define in1 7
 #define in2 8
 #define value 9
